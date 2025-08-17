@@ -24,7 +24,7 @@ An intelligent data analysis web application that provides AI-powered insights a
 ### Installation
 1. Clone the repository:
    ```bash
-   git clone https://github.com/Ritika-Budhiraja/data_analyst_agent.git
+   git clone https://github.com/Ritika-Budhiraja/tds_project
    cd Project_2
    ```
 
