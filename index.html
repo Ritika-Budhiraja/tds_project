@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TDS Data Analyst Agent</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+    line-height: 1.6;
+    color: #f8f9fa;
+    background: linear-gradient(135deg, #0F172A, #1E293B);
+    min-height: 100vh;
+  }
+  .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+  .header { text-align: center; margin-bottom: 40px; color: #fff; }
+  .header h1 { 
+    font-size: 3rem; 
+    margin-bottom: 15px; 
+    text-shadow: 2px 2px 4px rgba(0,0,0,.6);
+    background: linear-gradient(90deg, #60A5FA, #34D399);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .header p { 
+    font-size: 1.2rem; 
+    opacity: .9;
+    color: #CBD5E1;
+  }
+  .main-card {
+    background: rgba(30, 41, 59, 0.95);
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    padding: 35px;
+    margin-bottom: 30px;
+    border: 1px solid rgba(148, 163, 184, 0.1);
+    backdrop-filter: blur(10px);
+  }
+  .form-group label { 
+    display: block; 
+    margin-bottom: 10px; 
+    font-weight: 600; 
+    color: #E2E8F0;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .file-input {
+    width: 100%; 
+    padding: 20px; 
+    border: 2px dashed rgba(148, 163, 184, 0.4);
+    border-radius: 12px; 
+    background: rgba(30, 41, 59, 0.6);
+    cursor: pointer; 
+    transition: all 0.3s ease; 
+    text-align: center;
+    color: #CBD5E1;
+  }
+  .file-input:hover {
+    border-color: #00c6ff;
+    background: rgba(31, 31, 46, 0.9);
+    color: #fff;
+  }
+  .file-info {
+    margin-top: 10px; padding: 10px; background: rgba(51, 51, 51, 0.8);
+    border-radius: 5px; font-size: 14px; color: #a8c7ff; display: none;
+  }
+  .btn {
+    background: linear-gradient(90deg, #60A5FA, #34D399);
+    color: #fff; 
+    border: none;
+    padding: 16px 32px; 
+    border-radius: 12px; 
+    font-size: 16px;
+    font-weight: 600; 
+    cursor: pointer; 
+    transition: all 0.3s ease; 
+    width: 100%;
+    box-shadow: 0 8px 20px rgba(96, 165, 250, 0.3);
+    position: relative;
+    overflow: hidden;
+  }
+  .btn:hover { 
+    transform: translateY(-2px); 
+    box-shadow: 0 12px 25px rgba(96, 165, 250, 0.4);
+    background: linear-gradient(90deg, #34D399, #60A5FA);
+  }
+  .btn:disabled { 
+    background: #475569; 
+    cursor: not-allowed; 
+    transform: none; 
+    box-shadow: none;
+    opacity: 0.7;
+  }
+  .btn-secondary { 
+    background: #334155; 
+    color: #E2E8F0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+  .button-group { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
+  .loading { display: none; text-align: center; padding: 20px; }
+  .spinner {
+    border: 4px solid rgba(255, 255, 255, 0.2); border-top: 4px solid #00c6ff; border-radius: 50%;
+    width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 15px;
+  }
+  #timer { margin-top: 10px; font-size: 1.1rem; color: #a8ffb3; }
+  @keyframes spin { 0% { transform: rotate(0) } 100% { transform: rotate(360deg) } }
+  .results { display: none; margin-top: 30px; }
+  .result-item {
+    background: rgba(30, 41, 59, 0.95);
+    border-left: 4px solid #60A5FA;
+    padding: 25px;
+    margin-bottom: 25px;
+    border-radius: 0 16px 16px 0;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+  }
+  .result-item:hover {
+    transform: translateX(5px);
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.3);
+  }
+  .question { 
+    font-weight: 600; 
+    color: #F8FAFC; 
+    margin-bottom: 18px; 
+    font-size: 1.2rem;
+    letter-spacing: 0.3px;
+  }
+  .answer { 
+    color: #CBD5E1; 
+    line-height: 1.7;
+    font-size: 1.05rem;
+  }
+  .answer pre {
+    background: #1E293B;
+    color: #F1F5F9;
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+  }
+  .answer img {
+    max-width: 100%; height: auto; border-radius: 8px; margin: 10px 0;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, .5); cursor: pointer; transition: transform .3s ease;
+  }
+  .answer img:hover { transform: scale(1.02); }
+  .error { background: #3b1f1f; border-left-color: #dc3545; color: #ffb3b3; }
+  .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, .9); }
+  .modal-content { margin: auto; display: block; width: 80%; max-width: 700px; max-height: 80%; object-fit: contain; }
+  .close { position: absolute; top: 15px; right: 35px; color: #f1f1f1; font-size: 40px; font-weight: bold; cursor: pointer; }
+  .close:hover { color: #bbb; }
+  @media (max-width: 768px) {
+    .container { padding: 10px; }
+    .header h1 { font-size: 2rem; }
+    .main-card { padding: 20px; }
+    .button-group { flex-direction: column; }
+    .btn-secondary { width: 100%; }
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🤖 Smart Data Analysis</h1>
+      <p>Get AI-powered insights and beautiful visualizations for your data questions</p>
+    </div>
+
+    <div class="main-card">
+      <form id="analysisForm">
+        <!-- Questions file -->
+        <div class="form-group">
+          <label for="questions_file">Your Questions <span style="color:#dc3545">*</span></label>
+          <div class="file-input" id="questionsDrop">
+            <input type="file" id="questions_file" name="questions_file" accept=".txt"/>
+            <span>� Drop your questions file here or click to browse (.txt)</span>
+          </div>
+          <div id="questionsInfo" class="file-info"></div>
+        </div>
+
+        <!-- Dataset file -->
+        <div class="form-group">
+          <label for="data_file">Your Dataset</label>
+          <div class="file-input" id="dataDrop">
+            <input type="file" id="data_file" name="data_file" accept=".csv,.xlsx,.xls,.json,.parquet,.txt"/>
+            <span>� Add your data file here (CSV, Excel, JSON, or Parquet)</span>
+          </div>
+          <div id="dataInfo" class="file-info"></div>
+        </div>
+
+        <div class="button-group">
+          <button type="submit" class="btn" id="submitBtn">✨ Generate Insights</button>
+          <button type="button" class="btn btn-secondary" id="clearBtn">↺ Start Fresh</button>
+        </div>
+      </form>
+
+      <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <p>✨ Working on your insights... Hold tight!</p>
+        <p id="timer">⏱ 0s</p>
+      </div>
+
+      <div class="results" id="results">
+        <h3>� Your Insights</h3>
+        <div id="resultsContent"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Image Modal -->
+  <div id="imageModal" class="modal">
+    <span class="close">&times;</span>
+    <img class="modal-content" id="modalImage" alt="Visualization"/>
+  </div>
+
+  <script>
+    function normalizeImageData(answer) {
+      let s = null;
+      if (typeof answer === 'string') { s = answer.trim(); }
+      else if (answer && typeof answer === 'object') {
+        s = answer.image || answer.base64 || answer.plot || answer.data || null;
+        if (typeof s === 'string') s = s.trim();
+      }
+      if (!s) return null;
+      s = s.replace(/^data:aimage\//i, 'data:image/');
+      if (/^data:image\//i.test(s)) return s;
+      const base64Like = /^[A-Za-z0-9+/=\r\n]+$/.test(s) && s.length > 200 && !/\s{2,}/.test(s);
+      if (base64Like) return 'data:image/png;base64,' + s;
+      return null;
+    }
+
+    function renderAnswerInto(answer, container, onImageClick) {
+      const maybeImg = normalizeImageData(answer);
+      if (maybeImg) {
+        const img = document.createElement('img');
+        img.src = maybeImg;
+        img.alt = 'Generated visualization';
+        img.addEventListener('click', () => onImageClick(maybeImg));
+        container.appendChild(img);
+        return;
+      }
+      const text = (answer && typeof answer === 'object') ? JSON.stringify(answer, null, 2) : String(answer ?? '');
+      if (text.includes('\n') || text.length > 120) {
+        const pre = document.createElement('pre');
+        pre.style.whiteSpace = 'pre-wrap';
+        pre.style.background = '#f8f9fa';
+        pre.style.padding = '15px';
+        pre.style.borderRadius = '5px';
+        pre.style.overflow = 'auto';
+        pre.textContent = text;
+        container.appendChild(pre);
+      } else {
+        container.textContent = text;
+      }
+    }
+
+    class DataAnalystApp {
+      constructor() {
+        this.form = document.getElementById('analysisForm');
+        this.qFileInput = document.getElementById('questions_file');
+        this.dFileInput = document.getElementById('data_file');
+        this.qDrop = document.getElementById('questionsDrop');
+        this.dDrop = document.getElementById('dataDrop');
+        this.qInfo = document.getElementById('questionsInfo');
+        this.dInfo = document.getElementById('dataInfo');
+        this.submitBtn = document.getElementById('submitBtn');
+        this.clearBtn = document.getElementById('clearBtn');
+        this.loading = document.getElementById('loading');
+        this.results = document.getElementById('results');
+        this.resultsContent = document.getElementById('resultsContent');
+        this.modal = document.getElementById('imageModal');
+        this.modalImage = document.getElementById('modalImage');
+        this.closeModal = document.querySelector('.close');
+        this.timerElement = document.getElementById('timer');
+        this.timerInterval = null;
+        this.initEventListeners();
+      }
+
+      initEventListeners() {
+        this.form.addEventListener('submit', (e) => this.handleSubmit(e));
+        this.clearBtn.addEventListener('click', () => this.clearForm());
+        this.qFileInput.addEventListener('change', (e) => this.handleFileSelect(e, 'q'));
+        this.dFileInput.addEventListener('change', (e) => this.handleFileSelect(e, 'd'));
+        this.closeModal.addEventListener('click', () => this.hideImageModal());
+        this.modal.addEventListener('click', (e) => { if (e.target === this.modal) this.hideImageModal(); });
+      }
+
+      handleFileSelect(event, type) {
+        const file = event.target.files[0];
+        if (type === 'q') {
+          if (file) { this.qInfo.innerHTML = `<strong>Questions:</strong> ${file.name} (${(file.size / 1024).toFixed(2)} KB)`; this.qInfo.style.display = 'block'; }
+          else { this.qInfo.style.display = 'none'; }
+        } else {
+          if (file) { this.dInfo.innerHTML = `<strong>Dataset:</strong> ${file.name} (${(file.size / 1024).toFixed(2)} KB)`; this.dInfo.style.display = 'block'; }
+          else { this.dInfo.style.display = 'none'; }
+        }
+      }
+
+      async handleSubmit(event) {
+        event.preventDefault();
+        if (!this.qFileInput.files[0]) { alert('Please upload a text file with your questions first.'); return; }
+        this.showLoading(); this.hideResults();
+
+        try {
+          const formData = new FormData();
+          formData.append('questions_file', this.qFileInput.files[0]);
+          if (this.dFileInput.files[0]) formData.append('data_file', this.dFileInput.files[0]);
+          const response = await fetch('/api', { method:'POST', body:formData });
+          if (!response.ok) {
+            let msg = `HTTP ${response.status}`;
+            try { const err = await response.json(); if (err && err.detail) msg = err.detail; } catch {}
+            throw new Error(msg);
+          }
+          const data = await response.json();
+          this.displayResults(data);
+        } catch (err) {
+          this.displayError(err.message || 'Unknown error');
+        } finally {
+          this.hideLoading();
+        }
+      }
+
+      showLoading() {
+        let seconds = 0;
+        this.timerElement.textContent = `⏱ ${seconds}s`;
+        this.timerInterval = setInterval(() => {
+          seconds++;
+          this.timerElement.textContent = `⏱ ${seconds}s`;
+        }, 1000);
+        this.loading.style.display = 'block';
+        this.submitBtn.disabled = true;
+        this.submitBtn.textContent = '🔮 Processing...';
+      }
+
+      hideLoading() {
+        clearInterval(this.timerInterval);
+        this.loading.style.display = 'none';
+        this.submitBtn.disabled = false;
+        this.submitBtn.textContent = '✨ Generate Insights';
+      }
+
+      displayResults(data) {
+        this.resultsContent.innerHTML = '';
+        if (data.error) { this.displayError(data.error); return; }
+        Object.entries(data).forEach(([question, answer]) => {
+          const item = document.createElement('div');
+          item.className = 'result-item';
+          const qDiv = document.createElement('div');
+          qDiv.className = 'question';
+          qDiv.textContent = question;
+          const aDiv = document.createElement('div');
+          aDiv.className = 'answer';
+          renderAnswerInto(answer, aDiv, (src) => this.showImageModal(src));
+          item.appendChild(qDiv); item.appendChild(aDiv);
+          this.resultsContent.appendChild(item);
+        });
+        this.showResults();
+      }
+
+      displayError(message) {
+        this.resultsContent.innerHTML = '';
+        const item = document.createElement('div');
+        item.className = 'result-item error';
+        const title = document.createElement('div');
+        title.className = 'question';
+        title.textContent = '❌ Error';
+        const content = document.createElement('div');
+        content.className = 'answer';
+        content.textContent = message;
+        item.appendChild(title); item.appendChild(content);
+        this.resultsContent.appendChild(item);
+        this.showResults();
+      }
+
+      showResults() { this.results.style.display = 'block'; }
+      hideResults() { this.results.style.display = 'none'; }
+      showImageModal(src) { this.modalImage.src = src; this.modal.style.display = 'block'; document.body.style.overflow = 'hidden'; }
+      hideImageModal() { this.modal.style.display = 'none'; document.body.style.overflow = 'auto'; }
+      clearForm() { this.qFileInput.value = ''; this.dFileInput.value = ''; this.qInfo.style.display = 'none'; this.dInfo.style.display = 'none'; this.hideResults(); this.hideLoading(); }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => { new DataAnalystApp(); });
+  </script>
+</body>
+</html>
