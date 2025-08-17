@@ -25,7 +25,7 @@ An intelligent data analysis web application that provides AI-powered insights a
 1. Clone the repository:
    ```bash
    git clone https://github.com/Ritika-Budhiraja/tds_project
-   cd Project_2
+ 
    ```
 
 2. Install dependencies:
